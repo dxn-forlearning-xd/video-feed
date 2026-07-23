@@ -89,11 +89,6 @@ const VideoPlayer = ({ video, isMuted, onToggleMute }: VideoPlayerProps) => {
           loop
           muted={true}
           playsInline
-          onVolumeChange={() => {
-            if (videoRef.current) {
-              console.log('🔊 当前视频实际静音状态:', videoRef.current.muted);
-            }
-          }}
           className="w-full h-full object-cover"
         />
         <audio ref={audioRef} src={currentBgm} loop muted={isMuted} />
