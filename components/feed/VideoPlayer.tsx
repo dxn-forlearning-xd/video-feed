@@ -1,11 +1,25 @@
 import { Video } from '@/types/types';
-import { Play } from 'lucide-react';
+import { Play, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+type VideoPlayerProps = {
+  video: Video;
+  isMuted: boolean;
+  onToggleMute: () => void;
+};
+const BGM_LIST = [
+  'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3',
+  'https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3',
+  'https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3',
+];
+const VideoPlayer = ({ video, isMuted, onToggleMute }: VideoPlayerProps) => {
+  const currentBgm = BGM_LIST[video.id % BGM_LIST.length];
 
-const VideoPlayer = ({ video }: { video: Video }) => {
-  const videoSrc = video.video_files?.[0]?.link;
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const videoSrc = video.video_files?.[0]?.link;
+
   const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
@@ -15,9 +29,11 @@ const VideoPlayer = ({ video }: { video: Video }) => {
 
         if (entry.isIntersecting) {
           videoRef.current.play().catch(() => {});
+          audioRef.current?.play().catch(() => {});
           setIsPlaying(true);
         } else {
           videoRef.current.pause();
+          audioRef.current?.pause();
         }
       },
       { threshold: 0.6 },
@@ -30,16 +46,26 @@ const VideoPlayer = ({ video }: { video: Video }) => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   const togglePlay = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !audioRef.current) return;
+
     if (isPlaying) {
       videoRef.current.pause();
+      audioRef.current.pause();
       setIsPlaying(false);
     } else {
       videoRef.current.play();
+      audioRef.current.play();
       setIsPlaying(true);
     }
   };
+
   return (
     <section
       key={video.id}
@@ -61,12 +87,31 @@ const VideoPlayer = ({ video }: { video: Video }) => {
           poster={video.image}
           autoPlay
           loop
-          muted
+          muted={true}
           playsInline
+          onVolumeChange={() => {
+            if (videoRef.current) {
+              console.log('🔊 当前视频实际静音状态:', videoRef.current.muted);
+            }
+          }}
           className="w-full h-full object-cover"
         />
+        <audio ref={audioRef} src={currentBgm} loop muted={isMuted} />
         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
       </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleMute();
+        }}
+        className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+      >
+        {isMuted ? (
+          <VolumeX className="w-6 h-6" />
+        ) : (
+          <Volume2 className="w-6 h-6" />
+        )}
+      </button>
     </section>
   );
 };
