@@ -1,46 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Bookmark, Heart, Play, User } from "lucide-react";
+import { Bookmark, Heart, Play, User } from "lucide-react";
 import Image from "next/image";
-
-const MOCK_LIKED_VIDEOS = [
-  {
-    id: "1",
-    title: "Cherry Blossom",
-    views: "12.4K",
-    cover:
-      "https://images.pexels.com/photos/33045/lion-wild-africa-african.jpg?auto=compress&cs=tinysrgb&w=600",
-  },
-  {
-    id: "2",
-    title: "Ocean Waves",
-    views: "85.1K",
-    cover:
-      "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
-  },
-  {
-    id: "3",
-    title: "Urban Vibes",
-    views: "3.2K",
-    cover:
-      "https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=600",
-  },
-];
+import { useSavedStore } from "@/store/useSavedStore";
+import { useState } from "react";
+import { SavedVideosModal } from "@/components/profile/SavedVideosModal";
+import { BackButton } from "@/components/ui/BackButton";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"Liked" | "Saved">("Liked");
+  const router = useRouter();
 
+  const savedVideos = useSavedStore((state) => state.savedVideos);
+  const hasHydrated = useSavedStore((state) => state._hasHydrated);
+
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState<number | null>(
+    null,
+  );
+
+  if (!hasHydrated) {
+    return <div className="w-full max-w-125 mx-auto h-40 bg-transparent" />;
+  }
   return (
-    <div className="min-h-screen bg-black text-white max-w-125 mx-auto relative border-x border-zinc-800 pb-10">
+    <div className="min-h-screen bg-black text-white max-w-125 mx-auto relative border-x border-zinc-800 pb-20">
       <header className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-black/80 backdrop-blur-md border-b border-zinc-800">
-        <Link
-          href="/"
-          className="p-1 rounded-full hover:bg-zinc-800 transition"
-        >
-          <ArrowLeft className="w-6 h-6 text-white" />
-        </Link>
+        <BackButton onClick={() => router.back()} />
         <span className="font-semibold text-base">Guest User</span>
         <div className="w-6" />
       </header>
@@ -77,32 +61,25 @@ export default function ProfilePage() {
 
       <div className="flex border-b border-zinc-800 mt-2">
         <button
-          onClick={() => setActiveTab("Liked")}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeTab === "Liked" ? "border-white text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"}`}
-        >
-          <Heart className="w-4 h-4" />
-          Liked
-        </button>
-        <button
-          onClick={() => setActiveTab("Saved")}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition border-b-2 cursor-pointer ${activeTab === "Saved" ? "border-white text-white" : "border-transparent text-zinc-500 hover:text-zinc-300"}`}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition border-b-2 text-white`}
         >
           <Bookmark className="w-4 h-4" />
           Saved
         </button>
       </div>
 
-      <main className="p-1">
-        {MOCK_LIKED_VIDEOS.length > 0 ? (
+      <main className="p-1 w-full min-w-125 mx-auto">
+        {savedVideos.length > 0 ? (
           <div className="grid grid-cols-3 gap-1">
-            {MOCK_LIKED_VIDEOS.map((video) => (
+            {savedVideos.map((video, index) => (
               <div
                 key={video.id}
+                onClick={() => setSelectedVideoIndex(index)}
                 className="relative aspect-3/4 bg-zinc-900 rounded-sm overflow-hidden group cursor-pointer"
               >
                 <Image
-                  src={video.cover}
-                  alt={video.title}
+                  src={video.image}
+                  alt="saved videos cover"
                   width={300}
                   height={400}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
@@ -110,17 +87,25 @@ export default function ProfilePage() {
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent flex items-end p-2">
                   <div className="flex items-center gap-1 text-xs text-white/90 font-medium">
                     <Play className="w-3 h-3 fill-white" />
-                    <span>{video.views}</span>
+                    {/* <span>{video.views}</span> */}
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-zinc-500">
+          <div className="w-full flex flex-col items-center justify-center py-16 text-zinc-500">
             <Heart className="w-12 h-12 stroke-[1.5] mb-2" />
             <p className="text-sm">No liked videos yet</p>
           </div>
+        )}
+
+        {selectedVideoIndex !== null && (
+          <SavedVideosModal
+            videos={savedVideos}
+            initialIndex={selectedVideoIndex}
+            onClose={() => setSelectedVideoIndex(null)}
+          />
         )}
       </main>
     </div>

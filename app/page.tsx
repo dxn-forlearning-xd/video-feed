@@ -1,4 +1,5 @@
-import FeedContainer from '@/components/feed/FeedContainer';
+"use client";
+import FeedContainer from "@/components/feed/FeedContainer";
 
 export default function Home() {
   return (
