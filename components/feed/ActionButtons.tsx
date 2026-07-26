@@ -1,9 +1,11 @@
 import { useSavedStore } from "@/store/useSavedStore";
 import { Video } from "@/types/types";
 import { Bookmark, Heart, MessageCircle } from "lucide-react";
-import React from "react";
-
-const ActionButtons = ({ video }: { video: Video }) => {
+type ActionButtonsProps = {
+  video: Video;
+  isLoading: boolean;
+};
+const ActionButtons = ({ video, isLoading }: ActionButtonsProps) => {
   const savedVideos = useSavedStore((state) => state.savedVideos);
   const toggleSave = useSavedStore((state) => state.toggleSave);
   const isSaved = savedVideos.some((item) => item.id === video.id);

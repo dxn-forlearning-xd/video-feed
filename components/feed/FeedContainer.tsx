@@ -48,11 +48,12 @@ const FeedContainer = () => {
     <main className="w-full h-[calc(100vh-70px)] overflow-y-scroll snap-y snap-mandatory scrollbar-none ">
       {videos?.map((video: Video, index: number) => {
         const isNearby = Math.abs(index - activeIndex) <= 1;
-        if (!isNearby) {
+        const shouldRender = isNearby || index === 0;
+        if (!shouldRender) {
           return (
             <div
               key={video.id}
-              className="w-full h-full snap-start snap-always"
+              className="w-full h-full snap-start snap-always bg-zinc-900"
             />
           );
         }
@@ -63,6 +64,7 @@ const FeedContainer = () => {
             isMuted={isMuted}
             onToggleMute={handleToggleMute}
             onActive={() => setActiveIndex(index)}
+            isLoading={isLoading}
           />
         );
       })}

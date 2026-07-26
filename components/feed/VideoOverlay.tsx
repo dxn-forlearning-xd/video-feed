@@ -1,7 +1,12 @@
-import { Video } from '@/types/types';
-import React from 'react';
+import { Video } from "@/types/types";
+import React from "react";
 
-const VideoOverlay = ({ video }: { video: Video }) => {
+type VideoOverlayProps = {
+  video: Video;
+  isLoading: boolean;
+};
+
+const VideoOverlay = ({ video, isLoading }: VideoOverlayProps) => {
   return (
     <div>
       <div className="absolute left-4 bottom-6 right-16 z-10 flex flex-col gap-2 text-left">

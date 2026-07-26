@@ -34,7 +34,6 @@ export default function ProfilePage() {
     );
     setSavedVideos(newSavedVideos);
 
-    // 清空选中并退出编辑状态
     setSelectedIds([]);
     setIsSelectMode(false);
   };
