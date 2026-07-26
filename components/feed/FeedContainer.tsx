@@ -1,10 +1,10 @@
 "use client";
-import useSWR from "swr";
 import VideoCard from "./VideoCard";
 import { GetVideoResponse, Video } from "@/types/types";
-import { fetcher } from "@/services/fetcher";
-import { useEffect, useRef, useState } from "react";
+import { fetcher, getKey } from "@/services/fetcher";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSavedStore } from "@/store/useSavedStore";
+import useSWRInfinite from "swr/infinite";
 
 const FeedContainer = () => {
   const [isMuted, setIsMuted] = useState(true);
@@ -12,11 +12,19 @@ const FeedContainer = () => {
   const activeIndex = useSavedStore((state) => state.activeIndex);
   const setActiveIndex = useSavedStore((state) => state.setActiveIndex);
 
-  const { data, error, isLoading } = useSWR<GetVideoResponse>(
-    "https://api.pexels.com/v1/videos/popular",
-    fetcher,
-  );
-  const videos = data?.videos;
+  const { data, error, isLoading, size, setSize, isValidating } =
+    useSWRInfinite<GetVideoResponse>(getKey, fetcher);
+  const videos = useMemo(() => {
+    return data ? data.flatMap((page) => page.videos) : [];
+  }, [data]);
+
+  useEffect(() => {
+    const isNearBottom = activeIndex > videos.length - 3;
+    if (isNearBottom && !isValidating) {
+      setSize(size + 1);
+    }
+  }, [activeIndex, videos.length, isValidating, setSize, size]);
+
   const handleToggleMute = () => {
     setIsMuted((prev) => !prev);
   };

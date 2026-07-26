@@ -10,6 +10,7 @@ type SavedStore = {
   toggleSave: (video: Video) => void;
   setActiveIndex: (index: number) => void;
   setHasHydrated: (state: boolean) => void;
+  setSavedVideos: (video: Video[]) => void;
 };
 
 export const useSavedStore = create<SavedStore>()(
@@ -31,6 +32,7 @@ export const useSavedStore = create<SavedStore>()(
           };
         }),
 
+      setSavedVideos: (video) => set({ savedVideos: video }),
       setActiveIndex: (index) => set({ activeIndex: index }),
     }),
     {

@@ -157,6 +157,7 @@ const VideoPlayer = ({
           loop
           muted={true}
           playsInline
+          preload="metadata"
           onTimeUpdate={handleTimeUpdate}
           className="w-full h-full object-cover"
         />
