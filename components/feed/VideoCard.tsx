@@ -8,14 +8,12 @@ type VideoCardProps = {
   isMuted: boolean;
   onToggleMute: () => void;
   onActive: () => void;
-  isLoading: boolean;
 };
 const VideoCard = ({
   video,
   isMuted,
   onToggleMute,
   onActive,
-  isLoading,
 }: VideoCardProps) => {
   return (
     <section className="relative max-w-125 mx-auto h-full text-white overflow-hidden select-none snap-start">
@@ -25,8 +23,8 @@ const VideoCard = ({
         onToggleMute={onToggleMute}
         onActive={onActive}
       />
-      <ActionButtons video={video} isLoading={isLoading} />
-      <VideoOverlay video={video} isLoading={isLoading} />
+      <ActionButtons video={video} />
+      <VideoOverlay video={video} />
     </section>
   );
 };

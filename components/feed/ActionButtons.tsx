@@ -3,9 +3,8 @@ import { Video } from "@/types/types";
 import { Bookmark, Heart, MessageCircle } from "lucide-react";
 type ActionButtonsProps = {
   video: Video;
-  isLoading: boolean;
 };
-const ActionButtons = ({ video, isLoading }: ActionButtonsProps) => {
+const ActionButtons = ({ video }: ActionButtonsProps) => {
   const savedVideos = useSavedStore((state) => state.savedVideos);
   const toggleSave = useSavedStore((state) => state.toggleSave);
   const isSaved = savedVideos.some((item) => item.id === video.id);

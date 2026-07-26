@@ -64,7 +64,6 @@ const FeedContainer = () => {
             isMuted={isMuted}
             onToggleMute={handleToggleMute}
             onActive={() => setActiveIndex(index)}
-            isLoading={isLoading}
           />
         );
       })}
